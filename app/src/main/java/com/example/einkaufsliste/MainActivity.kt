@@ -1,58 +1,58 @@
 package com.example.einkaufsliste
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
-import com.example.einkaufsliste.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
-private lateinit var binding: ActivityMainBinding
+    //  Liste vom Typ String, die die einzelnen Einträge der Einkaufsliste enthalten wird
+    private val items = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-     binding = ActivityMainBinding.inflate(layoutInflater)
-     setContentView(binding.root)
+        // Layout der Activity laden (unter res/layout)
+        setContentView(R.layout.activity_main)
 
-        setSupportActionBar(binding.toolbar)
+        // Die vorhandenen Elemente der view finden und Konstanten zuweisen
+        val inputField = findViewById<EditText>(R.id.input_item)
+        val addButton = findViewById<Button>(R.id.add_button)
+        val listView = findViewById<ListView>(R.id.item_list)
 
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        //  Adapter dient zur Verbindung des Codes zur View (definiert in layout).
+        // Dieser Arrayadapter nimmt eine Liste von Strings auf und
+        // erzeugt für die jeweiligen Elemente eine TextView die in der ListView angezeigt werden kann.
+        // Initialisiert wird der Adapter mit den Paramtern: Kontext (this; Hier die activity), dem
+        // Layout der ListView (list_item), der ID der TextView (einzelner Listeneintrag; definiert in list_item als "item_text"),
+        // die in der ListView angezeigt werden soll und der Ressource im Quellcode (die Liste namens "items").
+        val adapter: ArrayAdapter<String> =
+            ArrayAdapter(this, R.layout.list_item, R.id.item_text, items)
 
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null)
-                    .setAnchorView(R.id.fab).show()
+        // Dann wird dieser Adapter als Adapter der listView gesetzt.
+        listView.adapter = adapter
+
+        // Ein Eventlistener für den Hinzufügebutton
+        addButton.setOnClickListener {
+            val text = inputField.text.toString().trim()
+            if (text.isNotEmpty()) {
+                items.add(text)
+
+                // Adapter muss benachrichtig werden, um Liste zu updaten
+                adapter.notifyDataSetChanged()
+                inputField.text.clear()
+            }
         }
-    }
-override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when(item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+        // Evenlistener für die Liste der Gegenstände.
+        // Diesem Listener wird eine Callbackfunktion  mithilfe einer Lambda (Arrow)-Funktion übergeben.
+        // Diese bekommt 4 Parameter mitgegeben, allerdings wird für den Anwendungsfall nur die Position benötigt.
+        //  Unbenötigte Parameter können per "_" ausgespart werden.
+        // Wird nun ein einzelner Gegenstand getappt, kann dieser über den Positionsparameter ermittelt und entfernt werden.
+        // Dann wird der Adapter wieder benachrichtigt.
+        listView.setOnItemClickListener { _, _, position, _ ->
+            items.removeAt(position)
+            adapter.notifyDataSetChanged()
         }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-    val navController = findNavController(R.id.nav_host_fragment_content_main)
-    return navController.navigateUp(appBarConfiguration)
-            || super.onSupportNavigateUp()
     }
 }
