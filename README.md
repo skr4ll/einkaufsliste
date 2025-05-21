@@ -5,5 +5,6 @@ Dies ist eine einfache Einkaufslistenapp. Über das Textfeld und den Hinzufügen
 Per Tap auf einen eingetragenen Gegenstand wird dieser aus der Liste entfernt.
 Die App kann über die hier vorliegende APK installiert werden.
 
-![demo](https://github.com/user-attachments/assets/08aab9a4-bceb-48a1-9d33-b002d6720f3d)
+![demo](https://github.com/user-attachments/assets/e29577d0-22cd-4898-a33e-f0e267c61941)
+
 
